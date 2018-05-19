@@ -1,12 +1,9 @@
 import React from 'react';
-import { Route, Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Route } from 'react-router-dom';
 import Home from '../home';
-import Partner from '../partner';
-import PartnerAdd from '../partner/add';
-import Room from '../room';
-import RoomAdd from '../room/add';
 import Auction from '../auction';
-import AuctionAdd from '../auction/add';
 
 class App extends React.Component {
   constructor(props) {
@@ -58,24 +55,27 @@ class App extends React.Component {
               : 'socketDisconnected'
           }
         />
-        <header>
-          <Link to="/">Home</Link>
-          <Link to="/partner">Partner</Link>
-          <Link to="/room">Room</Link>
-          <Link to="/auction">Auction</Link>
-        </header>
 
         <main>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/partner" component={Partner} />
-          <Route exact path="/partner/add" component={PartnerAdd} />
-          <Route exact path="/room" component={Room} />
-          <Route exact path="/room/add" component={RoomAdd} />
-          <Route exact path="/auction" component={Auction} />
-          <Route exact path="/auction/add" component={AuctionAdd} />
+          <Route
+            exact
+            path="/"
+            component={this.props.isLoggedIn ? Auction : Home}
+          />
+          <Route
+            exact
+            path="/auction"
+            component={this.props.isLoggedIn ? Auction : Home}
+          />
         </main>
       </div>
     );
   }
 }
-export default App;
+
+const mapStateToProps = state => ({
+  isLoggedIn: state.partner.isLoggedIn
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

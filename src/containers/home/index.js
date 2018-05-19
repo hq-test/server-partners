@@ -1,10 +1,7 @@
 import React from 'react';
 
-const Home = () => (
-  <div>
-    <h1>Home</h1>
-    <p>Welcome Admin</p>
-  </div>
-);
+import LoginForm from '../../components/forms/login.js';
+
+const Home = props => <LoginForm />;
 
 export default Home;
