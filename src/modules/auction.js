@@ -13,8 +13,18 @@ export const READ_REQUESTED = 'auction/READ_REQUESTED';
 export const READ_SUCCESS = 'auction/READ_SUCCESS';
 export const READ_FAILED = 'auction/READ_FAILED';
 
+export const READ_LIVE_REQUESTED = 'auction/READ_LIVE_REQUESTED';
+export const READ_LIVE_SUCCESS = 'auction/READ_LIVE_SUCCESS';
+export const READ_LIVE_FAILED = 'auction/READ_LIVE_FAILED';
+
+export const READ_ARCHIVED_REQUESTED = 'auction/READ_ARCHIVED_REQUESTED';
+export const READ_ARCHIVED_SUCCESS = 'auction/READ_ARCHIVED_SUCCESS';
+export const READ_ARCHIVED_FAILED = 'auction/READ_ARCHIVED_FAILED';
+
 const initialState = {
   list: [],
+  liveList: [],
+  archivedList: [],
   isCreating: false,
   isDeleting: false,
   isReading: false,
@@ -111,6 +121,55 @@ export default (state = initialState, action) => {
         success: null
       };
 
+    case READ_LIVE_REQUESTED:
+      return {
+        ...state,
+        isReading: true,
+        error: null,
+        success: null
+      };
+
+    case READ_LIVE_SUCCESS:
+      return {
+        ...state,
+        liveList: action.data,
+        isReading: !state.isReading,
+        error: null,
+        success: null
+      };
+
+    case READ_LIVE_FAILED:
+      return {
+        ...state,
+        isReading: !state.isReading,
+        error: action.error,
+        success: null
+      };
+
+    case READ_ARCHIVED_REQUESTED:
+      return {
+        ...state,
+        isReading: true,
+        error: null,
+        success: null
+      };
+
+    case READ_ARCHIVED_SUCCESS:
+      return {
+        ...state,
+        archivedList: action.data,
+        isReading: !state.isReading,
+        error: null,
+        success: null
+      };
+
+    case READ_ARCHIVED_FAILED:
+      return {
+        ...state,
+        isReading: !state.isReading,
+        error: action.error,
+        success: null
+      };
     default:
       return state;
   }
@@ -230,6 +289,78 @@ export const Read = () => {
         dispatch({
           type: READ_SUCCESS,
           data: response
+        });
+      }
+    );
+  };
+};
+
+export const ReadLive = () => {
+  return dispatch => {
+    dispatch({
+      type: READ_REQUESTED
+    });
+    console.log('reading live list of auctions');
+
+    window.IO.socket.request(
+      {
+        method: 'get',
+        url: 'http://127.0.0.1:1337/api/auction/read/live',
+        headers: {}
+      },
+      function(response, jwres) {
+        if (!response.result) {
+          console.log(response); // => e.g. 403
+          dispatch({
+            type: READ_LIVE_FAILED,
+            error: response.error
+          });
+          setTimeout(() => {
+            dispatch({
+              type: RESET_ERROR
+            });
+          }, 3000);
+          return;
+        }
+        dispatch({
+          type: READ_LIVE_SUCCESS,
+          data: response.data
+        });
+      }
+    );
+  };
+};
+
+export const ReadArchived = () => {
+  return dispatch => {
+    dispatch({
+      type: READ_REQUESTED
+    });
+    console.log('reading archived list of auctions');
+
+    window.IO.socket.request(
+      {
+        method: 'get',
+        url: 'http://127.0.0.1:1337/api/auction/read/archived',
+        headers: {}
+      },
+      function(response, jwres) {
+        if (!response.result) {
+          console.log(response); // => e.g. 403
+          dispatch({
+            type: READ_ARCHIVED_FAILED,
+            error: response.error
+          });
+          setTimeout(() => {
+            dispatch({
+              type: RESET_ERROR
+            });
+          }, 3000);
+          return;
+        }
+        dispatch({
+          type: READ_ARCHIVED_SUCCESS,
+          data: response.data
         });
       }
     );

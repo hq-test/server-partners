@@ -4,12 +4,28 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import EmptyList from '../../components/lists/emptyList.js';
 import AuctionList from '../../components/lists/auctionList.js';
-import { Read } from '../../modules/auction';
+import {
+  Read,
+  ReadLive as LiveAuction,
+  ReadArchived as ArchivedAuction
+} from '../../modules/auction';
 import { Logout } from '../../modules/partner';
 import ErrorBox from '../../components/messageBoxs/error.js';
 import SuccessBox from '../../components/messageBoxs/success.js';
+import moment from 'moment';
+
+var a = moment(new Date());
+var b = moment(new Date());
+console.log(a.from(b)); // "a day ago"
 
 class Auction extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeLink: 'live'
+    };
+  }
+
   render() {
     const props = this.props;
     return (
@@ -18,13 +34,44 @@ class Auction extends React.Component {
           Welcome {props.loggedInUser.title},{' '}
           <button onClick={() => props.Logout()}>Logout</button>
         </p>
-        <h1>Auction</h1>
-
+        <h1>Auctions</h1>
+        <div>
+          <button
+            style={
+              this.state.activeLink == 'live'
+                ? { backgroundColor: 'yellow' }
+                : {}
+            }
+            onClick={() => {
+              this.setState({ activeLink: 'live' });
+              props.LiveAuction();
+            }}>
+            Live
+          </button>
+          <button
+            style={
+              this.state.activeLink == 'archived'
+                ? { backgroundColor: 'yellow' }
+                : {}
+            }
+            onClick={() => {
+              this.setState({ activeLink: 'archived' });
+              props.ArchivedAuction();
+            }}>
+            Archived
+          </button>
+        </div>
         {props.error ? <ErrorBox message={props.error} /> : null}
         {props.success ? <SuccessBox message={props.success} /> : null}
 
-        {props.list.length ? (
-          <AuctionList items={props.list} onView={props.View} />
+        {this.state.activeLink == 'live' ? (
+          props.liveList.length ? (
+            <AuctionList items={props.liveList} onView={props.View} />
+          ) : (
+            <EmptyList />
+          )
+        ) : props.archivedList.length ? (
+          <AuctionList items={props.archivedList} />
         ) : (
           <EmptyList />
         )}
@@ -35,7 +82,8 @@ class Auction extends React.Component {
 
 const mapStateToProps = state => ({
   loggedInUser: state.partner.loggedInUser,
-  list: state.auction.list,
+  liveList: state.auction.liveList,
+  archivedList: state.auction.archivedList,
   error: state.auction.error,
   success: state.auction.success
 });
@@ -43,6 +91,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
+      ArchivedAuction,
+      LiveAuction,
       Logout,
       Read,
       View: id => push('/auction/view/' + id)
