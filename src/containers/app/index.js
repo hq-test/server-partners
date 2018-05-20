@@ -5,6 +5,11 @@ import { Route } from 'react-router-dom';
 import Home from '../home';
 import Auction from '../auction';
 
+import {
+  ReadLive as AuctionReadLive,
+  ReadArchived as AuctionReadArchived
+} from '../../modules/auction.js';
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +32,12 @@ class App extends React.Component {
     window.IO.socket.on('reconnect', function() {
       console.log('>>reconnected ... :D', window.IO.socket._raw.id);
       that.setState({ isSocketConnect: true });
+      if (this.props && this.props.isLoggedIn) {
+        this.props.AuctionReadLive();
+        this.props.AuctionReadArchived();
+      }
     });
+
     window.IO.socket.on('reconnecting', function() {
       console.log('>>reconnecting ...');
       that.setState({ isSocketConnect: false });
@@ -40,8 +50,7 @@ class App extends React.Component {
     });
 
     window.IO.socket.on('error', () => {
-      console.log('>>error ...');
-      that.setState({ isSocketConnect: false });
+      console.log('>> socket error ...');
     });
   }
 
@@ -77,5 +86,12 @@ const mapStateToProps = state => ({
   isLoggedIn: state.partner.isLoggedIn
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      AuctionReadLive,
+      AuctionReadArchived
+    },
+    dispatch
+  );
 export default connect(mapStateToProps, mapDispatchToProps)(App);

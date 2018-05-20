@@ -4,20 +4,16 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import store, { history } from './store';
 import App from './containers/app';
-// import { Read as RoomRead } from './modules/room.js';
 import {
   ReadLive as AuctionReadLive,
   ReadArchived as AuctionReadArchived
 } from './modules/auction.js';
-// import { Read as PartnerRead } from './modules/partner.js';
 
 import 'sanitize.css/sanitize.css';
 import './css/index.css';
 
 const target = document.querySelector('#root');
 
-// store.dispatch(PartnerRead());
-// store.dispatch(RoomRead());
 store.dispatch(AuctionReadLive());
 store.dispatch(AuctionReadArchived());
 

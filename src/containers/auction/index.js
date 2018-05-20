@@ -8,12 +8,15 @@ import {
   ReadLive as LiveAuction,
   ReadArchived as ArchivedAuction,
   Subscribe as SubscribeAuction,
-  UnSubscribe as UnSubscribeAuction
+  UnSubscribe as UnSubscribeAuction,
+  HandleClientCreate as HandleClientCreateAuction,
+  HandleClientUpdate as HandleClientUpdateAuction,
+  HandleClientDestroy as HandleClientDestroyAuction
 } from '../../modules/auction';
 import { Logout } from '../../modules/partner';
 import ErrorBox from '../../components/messageBoxs/error.js';
 import SuccessBox from '../../components/messageBoxs/success.js';
-import moment from 'moment';
+//import moment from 'moment';
 
 class Auction extends React.Component {
   constructor(props) {
@@ -25,8 +28,20 @@ class Auction extends React.Component {
 
   componentDidMount() {
     this.props.SubscribeAuction();
-    window.IO.socket.on('auction_model', function(data) {
-      console.log('>>receive auction model message', data);
+    const that = this;
+    window.IO.socket.on('auction_model_create', function(data) {
+      console.log('>>receive auction model create message', data);
+      that.props.HandleClientCreateAuction(data);
+    });
+
+    window.IO.socket.on('auction_model_update', function(data) {
+      console.log('>>receive auction model update message', data);
+      that.props.HandleClientUpdateAuction(data);
+    });
+
+    window.IO.socket.on('auction_model_destroy', function(data) {
+      console.log('>>receive auction model destroy message', data);
+      that.props.HandleClientDestroyAuction(data.id);
     });
   }
 
@@ -104,8 +119,10 @@ const mapDispatchToProps = dispatch =>
       ArchivedAuction,
       LiveAuction,
       Logout,
+      HandleClientCreateAuction,
+      HandleClientUpdateAuction,
+      HandleClientDestroyAuction,
       View: id => push('/auction/view/' + id)
-      //redirectHome: id => push('/')
     },
     dispatch
   );

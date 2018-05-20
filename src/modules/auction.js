@@ -17,6 +17,13 @@ export const UNSUBSCRIBE_REQUESTED = 'auction/UNSUBSCRIBE_REQUESTED';
 export const UNSUBSCRIBE_SUCCESS = 'auction/UNSUBSCRIBE_SUCCESS';
 export const UNSUBSCRIBE_FAILED = 'auction/UNSUBSCRIBE_FAILED';
 
+export const CLIENT_UPDATE_CREATE_SUCCESS =
+  'auction/CLIENT_UPDATE_CREATE_SUCCESS';
+export const CLIENT_UPDATE_UPDATE_SUCCESS =
+  'auction/CLIENT_UPDATE_UPDATE_SUCCESS';
+export const CLIENT_UPDATE_DESTROY_SUCCESS =
+  'auction/CLIENT_UPDATE_DESTROY_SUCCESS';
+
 const initialState = {
   liveList: [],
   archivedList: [],
@@ -133,6 +140,48 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isUnSubscribing: false
+      };
+
+    case CLIENT_UPDATE_CREATE_SUCCESS:
+      return {
+        ...state,
+        liveList:
+          action.data.isRunning && action.data.isActive
+            ? [...state.liveList, action.data]
+            : state.liveList,
+        error: null,
+        success: null
+      };
+
+    case CLIENT_UPDATE_UPDATE_SUCCESS:
+      let liveList = state.liveList.filter(item => item.id !== action.id);
+      let archivedList = state.archivedList.filter(
+        item => item.id !== action.id
+      );
+      liveList =
+        action.data.isRunning && action.data.isActive
+          ? [...liveList, action.data]
+          : liveList;
+
+      archivedList =
+        !action.data.isRunning && action.data.isActive && action.data.endAt > 0
+          ? [action.data, ...archivedList]
+          : archivedList;
+      return {
+        ...state,
+        liveList: liveList,
+        archivedList: archivedList,
+        error: null,
+        success: null
+      };
+
+    case CLIENT_UPDATE_DESTROY_SUCCESS:
+      return {
+        ...state,
+        liveList: state.liveList.filter(item => item.id !== action.id),
+        archivedList: state.archivedList.filter(item => item.id !== action.id),
+        error: null,
+        success: null
       };
     default:
       return state;
@@ -266,5 +315,37 @@ export const UnSubscribe = () => {
         });
       }
     );
+  };
+};
+
+export const HandleClientCreate = data => {
+  console.log('HandleClientCreate', data);
+  return dispatch => {
+    dispatch({
+      type: CLIENT_UPDATE_CREATE_SUCCESS,
+      data: data
+    });
+  };
+};
+
+export const HandleClientUpdate = data => {
+  console.log('HandleClientUpdate', data);
+
+  return dispatch => {
+    dispatch({
+      type: CLIENT_UPDATE_UPDATE_SUCCESS,
+      data: data
+    });
+  };
+};
+
+export const HandleClientDestroy = id => {
+  console.log('HandleClientDestroy', id);
+
+  return dispatch => {
+    dispatch({
+      type: CLIENT_UPDATE_DESTROY_SUCCESS,
+      id: id
+    });
   };
 };
