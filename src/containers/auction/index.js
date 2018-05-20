@@ -5,18 +5,15 @@ import { connect } from 'react-redux';
 import EmptyList from '../../components/lists/emptyList.js';
 import AuctionList from '../../components/lists/auctionList.js';
 import {
-  Read,
   ReadLive as LiveAuction,
-  ReadArchived as ArchivedAuction
+  ReadArchived as ArchivedAuction,
+  Subscribe as SubscribeAuction,
+  UnSubscribe as UnSubscribeAuction
 } from '../../modules/auction';
 import { Logout } from '../../modules/partner';
 import ErrorBox from '../../components/messageBoxs/error.js';
 import SuccessBox from '../../components/messageBoxs/success.js';
 import moment from 'moment';
-
-var a = moment(new Date());
-var b = moment(new Date());
-console.log(a.from(b)); // "a day ago"
 
 class Auction extends React.Component {
   constructor(props) {
@@ -24,6 +21,17 @@ class Auction extends React.Component {
     this.state = {
       activeLink: 'live'
     };
+  }
+
+  componentDidMount() {
+    this.props.SubscribeAuction();
+    window.IO.socket.on('auction_model', function(data) {
+      console.log('>>receive auction model message', data);
+    });
+  }
+
+  componentWillUnmount() {
+    this.props.UnSubscribeAuction();
   }
 
   render() {
@@ -38,7 +46,7 @@ class Auction extends React.Component {
         <div>
           <button
             style={
-              this.state.activeLink == 'live'
+              this.state.activeLink === 'live'
                 ? { backgroundColor: 'yellow' }
                 : {}
             }
@@ -50,7 +58,7 @@ class Auction extends React.Component {
           </button>
           <button
             style={
-              this.state.activeLink == 'archived'
+              this.state.activeLink === 'archived'
                 ? { backgroundColor: 'yellow' }
                 : {}
             }
@@ -64,7 +72,7 @@ class Auction extends React.Component {
         {props.error ? <ErrorBox message={props.error} /> : null}
         {props.success ? <SuccessBox message={props.success} /> : null}
 
-        {this.state.activeLink == 'live' ? (
+        {this.state.activeLink === 'live' ? (
           props.liveList.length ? (
             <AuctionList items={props.liveList} onView={props.View} />
           ) : (
@@ -91,10 +99,11 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
+      SubscribeAuction,
+      UnSubscribeAuction,
       ArchivedAuction,
       LiveAuction,
       Logout,
-      Read,
       View: id => push('/auction/view/' + id)
       //redirectHome: id => push('/')
     },

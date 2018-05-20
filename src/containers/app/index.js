@@ -21,7 +21,7 @@ class App extends React.Component {
     });
 
     window.IO.socket.on('message', function(data) {
-      console.log('>>receive in client room', data);
+      console.log('>>receive in client app index cmp di maount', data);
     });
 
     window.IO.socket.on('reconnect', function() {
