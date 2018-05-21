@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 export const RESET_ERROR = 'auction/RESET_ERROR';
 export const RESET_SUCCESS = 'auction/RESET_SUCCESS';
 
@@ -147,16 +149,17 @@ export default (state = initialState, action) => {
         ...state,
         liveList:
           action.data.isRunning && action.data.isActive
-            ? [...state.liveList, action.data]
+            ? _.orderBy([...state.liveList, action.data], 'endAt', 'DESC')
             : state.liveList,
         error: null,
         success: null
       };
 
     case CLIENT_UPDATE_UPDATE_SUCCESS:
-      let liveList = state.liveList.filter(item => item.id !== action.id);
+      console.log('reading from out of this state =------ >>>>', state);
+      let liveList = state.liveList.filter(item => item.id !== action.data.id);
       let archivedList = state.archivedList.filter(
-        item => item.id !== action.id
+        item => item.id !== action.data.id
       );
       liveList =
         action.data.isRunning && action.data.isActive
@@ -178,8 +181,16 @@ export default (state = initialState, action) => {
     case CLIENT_UPDATE_DESTROY_SUCCESS:
       return {
         ...state,
-        liveList: state.liveList.filter(item => item.id !== action.id),
-        archivedList: state.archivedList.filter(item => item.id !== action.id),
+        liveList: _.orderBy(
+          state.liveList.filter(item => item.id !== action.id),
+          'endAt',
+          'DESC'
+        ),
+        archivedList: _.orderBy(
+          state.archivedList.filter(item => item.id !== action.id),
+          'endAt',
+          'DESC'
+        ),
         error: null,
         success: null
       };
@@ -328,13 +339,13 @@ export const HandleClientCreate = data => {
   };
 };
 
-export const HandleClientUpdate = data => {
+export const HandleClientUpdate = (data, partnerId) => {
   console.log('HandleClientUpdate', data);
 
   return dispatch => {
     dispatch({
       type: CLIENT_UPDATE_UPDATE_SUCCESS,
-      data: data
+      data
     });
   };
 };
