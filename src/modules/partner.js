@@ -79,7 +79,7 @@ export default (state = initialState, action) => {
         isLogining: false,
         isLoggedIn: true,
         error: null,
-        success: 'login successfully'
+        success: null
       };
 
     case LOGIN_FAILED:

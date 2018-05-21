@@ -5,10 +5,10 @@ import { Route } from 'react-router-dom';
 import Home from '../home';
 import Auction from '../auction';
 
-import {
-  ReadLive as AuctionReadLive,
-  ReadArchived as AuctionReadArchived
-} from '../../modules/auction.js';
+// import {
+//   ReadLive as AuctionReadLive,
+//   ReadArchived as AuctionReadArchived
+// } from '../../modules/auction.js';
 
 class App extends React.Component {
   constructor(props) {
@@ -32,10 +32,10 @@ class App extends React.Component {
     window.IO.socket.on('reconnect', function() {
       console.log('>>reconnected ... :D', window.IO.socket._raw.id);
       that.setState({ isSocketConnect: true });
-      if (this.props && this.props.isLoggedIn) {
-        this.props.AuctionReadLive();
-        this.props.AuctionReadArchived();
-      }
+      // if (this.props && this.props.isLoggedIn) {
+      //   this.props.AuctionReadLive();
+      //   this.props.AuctionReadArchived();
+      // }
     });
 
     window.IO.socket.on('reconnecting', function() {
@@ -89,8 +89,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      AuctionReadLive,
-      AuctionReadArchived
+      // AuctionReadLive,
+      // AuctionReadArchived
     },
     dispatch
   );

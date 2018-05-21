@@ -16,6 +16,9 @@ import {
 import { Logout } from '../../modules/partner';
 import ErrorBox from '../../components/messageBoxs/error.js';
 import SuccessBox from '../../components/messageBoxs/success.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 //import moment from 'moment';
 
 class Auction extends React.Component {
@@ -27,32 +30,62 @@ class Auction extends React.Component {
   }
 
   componentDidMount() {
-    this.props.SubscribeAuction();
-    const that = this;
-    window.IO.socket.on('auction_model_create', function(data) {
-      console.log('>>receive auction model create message', data);
-      that.props.HandleClientCreateAuction(data);
-    });
+    if (this.props.loggedInUser) {
+      this.props.LiveAuction();
+      this.props.ArchivedAuction();
 
-    window.IO.socket.on('auction_model_update', function(data) {
-      console.log('>>receive auction model update message', data);
-      that.props.HandleClientUpdateAuction(data);
-    });
+      this.props.SubscribeAuction();
+      const that = this;
+      window.IO.socket.on('auction_model_create', function(data) {
+        console.log('>>receive auction model create message', data);
+        that.props.HandleClientCreateAuction(data);
+      });
 
-    window.IO.socket.on('auction_model_destroy', function(data) {
-      console.log('>>receive auction model destroy message', data);
-      that.props.HandleClientDestroyAuction(data.id);
-    });
+      window.IO.socket.on('auction_model_update', function(data) {
+        console.log('>>receive auction model update message', data);
+        that.props.HandleClientUpdateAuction(data);
+      });
+
+      window.IO.socket.on('auction_model_destroy', function(data) {
+        console.log('>>receive auction model destroy message', data);
+        that.props.HandleClientDestroyAuction(data.id);
+      });
+
+      window.IO.socket.on('auction_model_close_winner', function(data) {
+        console.log('>>>>>> receive auction close message WIN', data);
+        toast.success(
+          `Congratulations, Auction ${data.title} closed and your bid win.`,
+          {
+            position: toast.POSITION.TOP_CENTER
+          }
+        );
+      });
+
+      window.IO.socket.on('auction_model_close_loser', function(data) {
+        console.log('>>>>>> receive auction close message LOSE', data);
+        toast.error(`Sorry, Auction ${data.title} closed and your bid lose.`, {
+          position: toast.POSITION.TOP_CENTER
+        });
+      });
+    }
   }
 
   componentWillUnmount() {
-    this.props.UnSubscribeAuction();
+    if (this.props.loggedInUser) {
+      this.props.UnSubscribeAuction();
+      window.IO.socket.off('auction_model_create');
+      window.IO.socket.off('auction_model_update');
+      window.IO.socket.off('auction_model_destroy');
+      window.IO.socket.off('auction_model_close_winner');
+      window.IO.socket.off('auction_model_close_loser');
+    }
   }
 
   render() {
     const props = this.props;
     return (
       <div>
+        <ToastContainer autoClose={8000} />
         <p>
           Welcome {props.loggedInUser.title},{' '}
           <button onClick={() => props.Logout()}>Logout</button>
@@ -67,7 +100,6 @@ class Auction extends React.Component {
             }
             onClick={() => {
               this.setState({ activeLink: 'live' });
-              props.LiveAuction();
             }}>
             Live
           </button>
@@ -79,7 +111,6 @@ class Auction extends React.Component {
             }
             onClick={() => {
               this.setState({ activeLink: 'archived' });
-              props.ArchivedAuction();
             }}>
             Archived
           </button>
