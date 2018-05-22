@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 import Home from '../home';
 import Auction from '../auction';
+import { ToastContainer } from 'react-toastify';
 
 // import {
 //   ReadLive as AuctionReadLive,
@@ -57,6 +58,8 @@ class App extends React.Component {
   render() {
     return (
       <div>
+        <ToastContainer autoClose={8000} />
+
         <div
           className={
             this.state.isSocketConnect

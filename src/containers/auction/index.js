@@ -16,7 +16,7 @@ import {
 import { Logout } from '../../modules/partner';
 import ErrorBox from '../../components/messageBoxs/error.js';
 import SuccessBox from '../../components/messageBoxs/success.js';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 //import moment from 'moment';
@@ -85,7 +85,8 @@ class Auction extends React.Component {
     const props = this.props;
     return (
       <div>
-        <ToastContainer autoClose={8000} />
+        {props.errorBid ? toast.error(props.errorBid) : null}
+        {props.successBid ? toast.success(props.successBid) : null}
         <p>
           Welcome {props.loggedInUser.title},{' '}
           <button onClick={() => props.Logout()}>Logout</button>
@@ -139,7 +140,9 @@ const mapStateToProps = state => ({
   liveList: state.auction.liveList,
   archivedList: state.auction.archivedList,
   error: state.auction.error,
-  success: state.auction.success
+  success: state.auction.success,
+  errorBid: state.bid.error,
+  successBid: state.bid.success
 });
 
 const mapDispatchToProps = dispatch =>

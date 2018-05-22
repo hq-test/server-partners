@@ -1,20 +1,23 @@
 import React from 'react';
 import * as moment from 'moment';
 import Countdown from 'react-countdown-now';
+
+import AddBidForm from '../forms/addBid.js';
 var updateDatetime;
 
 class AuctionItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      startDate: moment(props.data.startAt)
+      startDate: moment(props.data.startAt).fromNow()
     };
+    console.log('in auctionItem constructor', this.state);
   }
 
   componentDidMount() {
     updateDatetime = setInterval(() => {
-      this.setState({ startDate: moment(this.props.startAt) });
-    }, 60000);
+      this.setState({ startDate: moment(this.props.data.startAt).fromNow() });
+    }, 5000);
   }
 
   componentWillUnmount() {
@@ -22,13 +25,35 @@ class AuctionItem extends React.Component {
   }
 
   render() {
-    const { data, onView } = this.props;
+    const { data } = this.props;
+
+    const minimumAllowedBid =
+      data.bids && data.bids.length
+        ? data.bids[0].bidAmount
+        : data.minimumAllowedBid;
+
+    const lastBid =
+      data.bids && data.bids.length
+        ? data.bids[0].bidAmount.toLocaleString()
+        : '-';
+
+    const isWinner =
+      data.bids && data.bids.length
+        ? data.bids[0].status === 'Approved' && data.bids[0].partner === 1
+          ? true
+          : false
+        : false;
+
     return (
       <div
         style={{
           border: '1px solid black',
           margin: 10,
-          backgroundColor: 'rgba(0, 0, 0, 0.05)',
+          backgroundColor: data.isRunning
+            ? 'rgba(0, 0, 0, 0.05)'
+            : isWinner
+              ? 'rgba(0, 255, 0, 0.05)'
+              : 'rgba(255, 0, 0, 0.05)',
           padding: 10,
           float: 'left'
         }}>
@@ -45,14 +70,9 @@ class AuctionItem extends React.Component {
           }
         />
         <div style={{ width: '45vw', float: 'right', padding: 20 }}>
-          <p>{data.room && data.room.title}</p>
-          <h3>{data.minimumAllowedBid} BHT</h3>
           <p>
             start from{' '}
-            <span style={{ color: 'green' }}>
-              {this.state.startDate.fromNow()}
-            </span>{' '}
-            for{' '}
+            <span style={{ color: 'green' }}>{this.state.startDate}</span> for{' '}
             <span style={{ color: 'green' }}>
               {data.endAt > new Date().getTime() ? (
                 <Countdown date={data.endAt} />
@@ -61,6 +81,27 @@ class AuctionItem extends React.Component {
               )}
             </span>
           </p>
+          <p>{data.room && data.room.title}</p>
+          <p>
+            Minimum Allowed Bid was{' '}
+            <span style={{ color: 'black' }}>
+              {data.minimumAllowedBid.toLocaleString()}
+            </span>{' '}
+            BHT
+          </p>
+          <p>
+            Last bid was <span style={{ color: 'green' }}>{lastBid}</span> BHT
+          </p>
+          {data.isRunning ? (
+            <AddBidForm
+              auctionId={data.id}
+              minimumAllowedBid={minimumAllowedBid}
+            />
+          ) : isWinner ? (
+            <h1 style={{ color: 'green' }}>You Win</h1>
+          ) : (
+            <h1 style={{ color: 'red' }}>You Lose</h1>
+          )}
         </div>
       </div>
     );
