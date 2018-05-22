@@ -64,8 +64,20 @@ class Auction extends React.Component {
       window.IO.socket.on('auction_model_close_loser', function(data) {
         console.log('>>>>>> receive auction close message LOSE', data);
         toast.error(`Sorry, Auction ${data.title} closed and your bid lose.`, {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.BUTTOM_CENTER
         });
+      });
+
+      window.IO.socket.on('bid_model_loser', function(data) {
+        console.log('>>>>>> receive bid loser message', data);
+        toast.error(
+          `Sorry, Your bid with ID ${data.id} for auction ID ${
+            data.auction
+          } LOSE`,
+          {
+            position: toast.POSITION.BUTTOM_CENTER
+          }
+        );
       });
     }
   }

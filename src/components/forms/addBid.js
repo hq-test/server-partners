@@ -9,10 +9,9 @@ class AddBidForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      amount: (
-        props.minimumAllowedBid +
-        props.minimumAllowedBid * 0.05
-      ).toFixed(0)
+      amount: Math.ceil(
+        props.minimumAllowedBid + props.minimumAllowedBid * 0.05
+      )
     };
 
     console.log('in addBid constructor', this.state);
@@ -41,10 +40,9 @@ class AddBidForm extends React.Component {
   componentWillReceiveProps(nextProps) {
     console.log('new props received', nextProps);
     this.setState({
-      amount: (
-        nextProps.minimumAllowedBid +
-        nextProps.minimumAllowedBid * 0.05
-      ).toFixed(0)
+      amount: Math.ceil(
+        nextProps.minimumAllowedBid + nextProps.minimumAllowedBid * 0.05
+      )
     });
   }
 
@@ -62,13 +60,18 @@ class AddBidForm extends React.Component {
           />{' '}
           BHT
         </label>
-        <input type="submit" value="Send" />
+        <input
+          type="submit"
+          value={this.props.isCreating ? 'Sending ...' : 'Send'}
+          disabled={this.props.isCreating}
+        />
       </form>
     );
   }
 }
 
 const mapStateToProps = state => ({
+  isCreating: state.bid.isCreating,
   loggedInUser: state.partner.loggedInUser
 });
 

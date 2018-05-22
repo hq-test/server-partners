@@ -1,4 +1,6 @@
 import React from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as moment from 'moment';
 import Countdown from 'react-countdown-now';
 
@@ -11,7 +13,6 @@ class AuctionItem extends React.Component {
     this.state = {
       startDate: moment(props.data.startAt).fromNow()
     };
-    console.log('in auctionItem constructor', this.state);
   }
 
   componentDidMount() {
@@ -25,7 +26,7 @@ class AuctionItem extends React.Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, loggedInUser } = this.props;
 
     const minimumAllowedBid =
       data.bids && data.bids.length
@@ -39,7 +40,8 @@ class AuctionItem extends React.Component {
 
     const isWinner =
       data.bids && data.bids.length
-        ? data.bids[0].status === 'Approved' && data.bids[0].partner === 1
+        ? data.bids[0].status === 'Approved' &&
+          data.bids[0].partner === loggedInUser.id
           ? true
           : false
         : false;
@@ -57,7 +59,9 @@ class AuctionItem extends React.Component {
           padding: 10,
           float: 'left'
         }}>
-        <h1>{data.title}</h1>
+        <h1>
+          #{data.id}: {data.title}
+        </h1>
         <img
           style={{ width: '45vw', float: 'left' }}
           src={
@@ -108,4 +112,9 @@ class AuctionItem extends React.Component {
   }
 }
 
-export default AuctionItem;
+const mapStateToProps = state => ({
+  loggedInUser: state.partner.loggedInUser
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+export default connect(mapStateToProps, mapDispatchToProps)(AuctionItem);
