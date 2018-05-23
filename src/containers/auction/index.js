@@ -139,12 +139,12 @@ class Auction extends React.Component {
           props.liveList.length ? (
             <AuctionList items={props.liveList} onView={props.View} />
           ) : (
-            <EmptyList />
+            <EmptyList message="Please wait. There is no live auction yet, as soon as any auction created by admin it will show here." />
           )
         ) : props.archivedList.length ? (
           <AuctionList items={props.archivedList} />
         ) : (
-          <EmptyList />
+          <EmptyList message="Archive list of auctions is empty" />
         )}
       </div>
     );
