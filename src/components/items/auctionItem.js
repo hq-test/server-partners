@@ -18,7 +18,7 @@ class AuctionItem extends React.Component {
   componentDidMount() {
     updateDatetime = setInterval(() => {
       this.setState({ startDate: moment(this.props.data.startAt).fromNow() });
-    }, 5000);
+    }, 60000);
   }
 
   componentWillUnmount() {
@@ -26,7 +26,7 @@ class AuctionItem extends React.Component {
   }
 
   render() {
-    const { data, loggedInUser } = this.props;
+    const { data, loggedInUser, isReadOnly = false } = this.props;
 
     const minimumAllowedBid =
       data.bids && data.bids.length
@@ -97,10 +97,12 @@ class AuctionItem extends React.Component {
             Last bid was <span style={{ color: 'green' }}>{lastBid}</span> BHT
           </p>
           {data.isRunning ? (
-            <AddBidForm
-              auctionId={data.id}
-              minimumAllowedBid={minimumAllowedBid}
-            />
+            isReadOnly ? null : (
+              <AddBidForm
+                auctionId={data.id}
+                minimumAllowedBid={minimumAllowedBid}
+              />
+            )
           ) : isWinner ? (
             <h1 style={{ color: 'green' }}>You Win</h1>
           ) : (

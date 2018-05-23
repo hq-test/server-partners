@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Create as createBid } from '../../modules/bid';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 class AddBidForm extends React.Component {
   constructor(props) {

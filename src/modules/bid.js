@@ -3,13 +3,17 @@
 export const RESET_ERROR = 'bid/RESET_ERROR';
 export const RESET_SUCCESS = 'bid/RESET_SUCCESS';
 
+export const RESET_ERROR_SEARCH = 'bid/RESET_ERROR_SEARCH';
+export const RESET_SUCCESS_SEARCH = 'bid/RESET_SUCCESS_SEARCH';
+
 export const CREATE_REQUESTED = 'bid/CREATE_REQUESTED';
 export const CREATE_SUCCESS = 'bid/CREATE_SUCCESS';
 export const CREATE_FAILED = 'bid/CREATE_FAILED';
 
-// export const DELETE_REQUESTED = 'bid/DELETE_REQUESTED';
-// export const DELETE_SUCCESS = 'bid/DELETE_SUCCESS';
-// export const DELETE_FAILED = 'bid/DELETE_FAILED';
+export const SEARCH_RESET = 'bid/SEARCH_RESET';
+export const SEARCH_REQUESTED = 'bid/SEARCH_REQUESTED';
+export const SEARCH_SUCCESS = 'bid/SEARCH_SUCCESS';
+export const SEARCH_FAILED = 'bid/SEARCH_FAILED';
 //
 // export const READ_REQUESTED = 'bid/READ_REQUESTED';
 // export const READ_SUCCESS = 'bid/READ_SUCCESS';
@@ -39,7 +43,11 @@ const initialState = {
   success: null,
   isSubscribing: false,
   isUnSubscribing: false,
-  isSubscribed: false
+  isSubscribed: false,
+  searchError: null,
+  searchSuccess: null,
+  isSearching: false,
+  searchItem: null
 };
 
 export default (state = initialState, action) => {
@@ -54,6 +62,18 @@ export default (state = initialState, action) => {
       return {
         ...state,
         success: null
+      };
+
+    case RESET_ERROR_SEARCH:
+      return {
+        ...state,
+        searchError: null
+      };
+
+    case RESET_SUCCESS_SEARCH:
+      return {
+        ...state,
+        searchSuccess: null
       };
 
     case CREATE_REQUESTED:
@@ -79,6 +99,41 @@ export default (state = initialState, action) => {
         error: action.error,
         success: null
       };
+
+    case SEARCH_RESET:
+      return {
+        ...state,
+        searchError: null,
+        searchSuccess: null,
+        searchItem: null
+      };
+
+    case SEARCH_REQUESTED:
+      return {
+        ...state,
+        isSearching: true,
+        searchError: null,
+        searchSuccess: null,
+        searchItem: null
+      };
+
+    case SEARCH_SUCCESS:
+      return {
+        ...state,
+        searchItem: action.data,
+        isSearching: !state.isSearching,
+        searchError: null,
+        searchSuccess: `Your bid with ID ${action.data.bid.id} found`
+      };
+
+    case SEARCH_FAILED:
+      return {
+        ...state,
+        isSearching: !state.isSearching,
+        searchError: action.error,
+        searchSuccess: null
+      };
+
     //
     // case DELETE_REQUESTED:
     //   return {
@@ -249,6 +304,54 @@ export const Create = data => {
     );
   };
 };
+
+export const Search = bidId => {
+  return dispatch => {
+    dispatch({
+      type: SEARCH_REQUESTED
+    });
+    console.log('searching bid', bidId);
+
+    window.IO.socket.request(
+      {
+        method: 'post',
+        url: 'http://127.0.0.1:1337/api/bid/search/id',
+        data: {
+          id: bidId
+        },
+        headers: {}
+      },
+      function(response, jwres) {
+        console.log('response', response);
+        if (!response.result) {
+          dispatch({
+            type: SEARCH_FAILED,
+            error: response.error && response.error.message
+          });
+          setTimeout(() => {
+            dispatch({
+              type: RESET_ERROR_SEARCH
+            });
+          }, 3000);
+          return;
+        }
+        dispatch({
+          type: SEARCH_SUCCESS,
+          data: response.data
+        });
+      }
+    );
+  };
+};
+
+export const ResetSearch = () => {
+  return dispatch => {
+    dispatch({
+      type: SEARCH_RESET
+    });
+  };
+};
+
 //
 // export const Delete = id => {
 //   return dispatch => {

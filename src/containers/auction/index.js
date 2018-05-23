@@ -14,10 +14,7 @@ import {
   HandleClientDestroy as HandleClientDestroyAuction
 } from '../../modules/auction';
 import { Logout } from '../../modules/partner';
-import ErrorBox from '../../components/messageBoxs/error.js';
-import SuccessBox from '../../components/messageBoxs/success.js';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 //import moment from 'moment';
 
@@ -93,16 +90,25 @@ class Auction extends React.Component {
     }
   }
 
+  componentWillReceiveProps(props) {
+    if (props.errorBid) {
+      toast.error(props.errorBid);
+    }
+    if (props.successBid) {
+      toast.success(props.successBid);
+    }
+    if (props.error) {
+      toast.error(props.error);
+    }
+    if (props.success) {
+      toast.success(props.success);
+    }
+  }
+
   render() {
     const props = this.props;
     return (
       <div>
-        {props.errorBid ? toast.error(props.errorBid) : null}
-        {props.successBid ? toast.success(props.successBid) : null}
-        <p>
-          Welcome {props.loggedInUser.title},{' '}
-          <button onClick={() => props.Logout()}>Logout</button>
-        </p>
         <h1>Auctions</h1>
         <div>
           <button
@@ -128,8 +134,6 @@ class Auction extends React.Component {
             Archived
           </button>
         </div>
-        {props.error ? <ErrorBox message={props.error} /> : null}
-        {props.success ? <SuccessBox message={props.success} /> : null}
 
         {this.state.activeLink === 'live' ? (
           props.liveList.length ? (

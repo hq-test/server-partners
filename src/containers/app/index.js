@@ -1,73 +1,42 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Route } from 'react-router-dom';
+import { push } from 'react-router-redux';
+import { withRouter, Route, Link } from 'react-router-dom';
+
 import Home from '../home';
 import Auction from '../auction';
-import { ToastContainer } from 'react-toastify';
+import Search from '../search';
 
-// import {
-//   ReadLive as AuctionReadLive,
-//   ReadArchived as AuctionReadArchived
-// } from '../../modules/auction.js';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Logout } from '../../modules/partner';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isSocketConnect: false
-    };
-  }
-
-  componentDidMount() {
-    var that = this;
-    window.IO.socket.on('connect', function() {
-      console.log('>>connected ;)', window.IO.socket._raw.id);
-      that.setState({ isSocketConnect: true });
-    });
-
-    window.IO.socket.on('message', function(data) {
-      console.log('>>receive in client app index cmp di maount', data);
-    });
-
-    window.IO.socket.on('reconnect', function() {
-      console.log('>>reconnected ... :D', window.IO.socket._raw.id);
-      that.setState({ isSocketConnect: true });
-      // if (this.props && this.props.isLoggedIn) {
-      //   this.props.AuctionReadLive();
-      //   this.props.AuctionReadArchived();
-      // }
-    });
-
-    window.IO.socket.on('reconnecting', function() {
-      console.log('>>reconnecting ...');
-      that.setState({ isSocketConnect: false });
-    });
-
-    window.IO.socket.on('disconnect', function(data) {
-      console.log('>>disconnected', data);
-      window.IO.socket._raw.io._reconnection = true;
-      that.setState({ isSocketConnect: false });
-    });
-
-    window.IO.socket.on('error', () => {
-      console.log('>> socket error ...');
-    });
-  }
-
   render() {
     return (
       <div>
-        <ToastContainer autoClose={8000} />
-
-        <div
-          className={
-            this.state.isSocketConnect
-              ? 'socketConnected'
-              : 'socketDisconnected'
-          }
-        />
-
+        <div>
+          <ToastContainer autoClose={5000} />
+          {this.props.isLoggedIn ? (
+            <div>
+              Welcome <b>{this.props.loggedInUser.title}</b>,{' '}
+              <button
+                onClick={() => {
+                  this.props.Logout();
+                  this.props.RedirectLogin();
+                }}>
+                Logout
+              </button>
+            </div>
+          ) : null}
+        </div>
+        {this.props.isLoggedIn ? (
+          <header>
+            <Link to="/">Auctions</Link>
+            <Link to="/search">Search</Link>
+          </header>
+        ) : null}
         <main>
           <Route
             exact
@@ -76,8 +45,8 @@ class App extends React.Component {
           />
           <Route
             exact
-            path="/auction"
-            component={this.props.isLoggedIn ? Auction : Home}
+            path="/search"
+            component={this.props.isLoggedIn ? Search : Home}
           />
         </main>
       </div>
@@ -86,15 +55,17 @@ class App extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  loggedInUser: state.partner.loggedInUser,
   isLoggedIn: state.partner.isLoggedIn
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      // AuctionReadLive,
-      // AuctionReadArchived
+      Logout,
+      RedirectLogin: () => push('/')
     },
     dispatch
   );
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
