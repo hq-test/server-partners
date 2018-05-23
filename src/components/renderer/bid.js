@@ -37,8 +37,11 @@ class Bid extends React.Component {
               : 'Your bid is Pending'}
         </h2>
         <h3>
-          Bid ID <b>#{bid.id}</b> that submited at <b>{this.state.createdAt}</b>{' '}
-          modified to status <b>{bid.status}</b> at{' '}
+          Bid{' '}
+          <b style={{ color: 'blue' }}>{bid.bidAmount.toLocaleString()} BHT</b>{' '}
+          with ID <b>#{bid.id}</b> that submited at{' '}
+          <b>{this.state.createdAt}</b> modified to status{' '}
+          <b style={{ color: 'blue' }}>{bid.status}</b> at{' '}
           <b>{this.state.updatedAt}</b>
         </h3>
         <AuctionItem data={auction} isReadOnly={true} />
