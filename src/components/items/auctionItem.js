@@ -2,6 +2,8 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as moment from 'moment';
+import { Link } from 'react-router-dom';
+
 import Countdown from 'react-countdown-now';
 
 import AddBidForm from '../forms/addBid.js';
@@ -60,19 +62,23 @@ class AuctionItem extends React.Component {
           float: 'left'
         }}>
         <h1>
-          #{data.id}: {data.title}
+          <Link to={`/auction/${data.id}`}>
+            #{data.id}: {data.title}
+          </Link>
         </h1>
-        <img
-          style={{ width: '45vw', float: 'left' }}
-          src={
-            (data.room && data.room.mainImageUri) ||
-            'http://mp3aux.com/assets/images/empty.png'
-          }
-          alt={
-            (data.room && data.room.mainImageUri) ||
-            'http://mp3aux.com/assets/images/empty.png'
-          }
-        />
+        <Link to={`/auction/${data.id}`}>
+          <img
+            style={{ width: '45vw', float: 'left' }}
+            src={
+              (data.room && data.room.mainImageUri) ||
+              'http://mp3aux.com/assets/images/empty.png'
+            }
+            alt={
+              (data.room && data.room.mainImageUri) ||
+              'http://mp3aux.com/assets/images/empty.png'
+            }
+          />
+        </Link>
         <div style={{ width: '45vw', float: 'right', padding: 20 }}>
           <p>
             start from{' '}
@@ -98,10 +104,12 @@ class AuctionItem extends React.Component {
           </p>
           {data.isRunning ? (
             isReadOnly ? null : (
-              <AddBidForm
-                auctionId={data.id}
-                minimumAllowedBid={minimumAllowedBid}
-              />
+              <span>
+                <AddBidForm
+                  auctionId={data.id}
+                  minimumAllowedBid={minimumAllowedBid}
+                />
+              </span>
             )
           ) : isWinner ? (
             <h1 style={{ color: 'green' }}>You Win</h1>

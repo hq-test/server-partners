@@ -60,6 +60,7 @@ class AddBidForm extends React.Component {
           BHT
         </label>
         <input
+          style={{ backgroundColor: 'green', color: 'white' }}
           type="submit"
           value={this.props.isCreating ? 'Sending ...' : 'Send'}
           disabled={this.props.isCreating}

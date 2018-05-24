@@ -6,6 +6,7 @@ import { withRouter, Route, Link } from 'react-router-dom';
 
 import Home from '../home';
 import Auction from '../auction';
+import AuctionDetail from '../auction/detail';
 import Search from '../search';
 
 import { ToastContainer } from 'react-toastify';
@@ -47,6 +48,10 @@ class App extends React.Component {
             exact
             path="/search"
             component={this.props.isLoggedIn ? Search : Home}
+          />
+          <Route
+            path="/auction/:id"
+            component={this.props.isLoggedIn ? AuctionDetail : Home}
           />
         </main>
       </div>

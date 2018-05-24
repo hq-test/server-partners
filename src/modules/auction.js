@@ -299,7 +299,7 @@ export const UnSubscribe = () => {
     dispatch({
       type: UNSUBSCRIBE_REQUESTED
     });
-    console.log('subscribing to list of auctions');
+    console.log('UnSubscribing to list of auctions');
 
     window.IO.socket.request(
       {
