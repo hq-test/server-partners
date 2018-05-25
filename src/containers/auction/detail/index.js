@@ -13,6 +13,9 @@ import {
 } from '../../../modules/auction';
 
 import {
+  ResetLiveList as ResetLiveListBid,
+  ReadLive as ReadLiveBid,
+  ReadMore as ReadMoreBid,
   Subscribe as SubscribeBid,
   UnSubscribe as UnSubscribeBid,
   HandleClientUpdate as HandleClientUpdateBid,
@@ -27,10 +30,9 @@ class AuctionDetail extends React.Component {
     if (this.props.loggedInUser) {
       this.props.SubscribeAuction();
       this.props.SubscribeBid(this.props.match.params.id);
+      this.props.ReadLiveBid(this.props.match.params.id);
 
       const that = this;
-
-      console.log('AuctionDetail > componentDidMount ', this.props);
 
       window.IO.socket.on('auction_model_update', function(data) {
         console.log('>>receive auction model update message', data);
@@ -87,6 +89,7 @@ class AuctionDetail extends React.Component {
     if (this.props.loggedInUser) {
       this.props.UnSubscribeAuction();
       this.props.UnSubscribeBid(this.props.match.params.id);
+      this.props.ResetLiveListBid();
 
       window.IO.socket.off('auction_model_update');
       window.IO.socket.off('auction_model_destroy');
@@ -100,16 +103,23 @@ class AuctionDetail extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    if (props.errorBid) {
+    if (props.errorBid && props.errorBid !== this.props.errorBid) {
+      console.log(props.errorBid);
       toast.error(props.errorBid);
     }
-    if (props.successBid) {
+    if (props.successBid && props.successBid !== this.props.successBid) {
+      console.log(props.successBid);
+
       toast.success(props.successBid);
     }
-    if (props.error) {
+    if (props.error && props.error !== this.props.error) {
+      console.log(props.error);
+
       toast.error(props.error);
     }
-    if (props.success) {
+    if (props.success && props.success !== this.props.success) {
+      console.log(props.success);
+
       toast.success(props.success);
     }
   }
@@ -126,9 +136,26 @@ class AuctionDetail extends React.Component {
                 item =>
                   item.id == this.props.match.params.id ? (
                     <span key={item.id}>
+                      total items : {props.totalBids}
                       <AuctionItem data={item} />
                       {props.bidList && props.bidList.length ? (
-                        props.bidList.map(bid => <BidItem data={bid} />)
+                        <div>
+                          {props.bidList.map(bid => (
+                            <BidItem key={bid.id} data={bid} />
+                          ))}
+                          <button
+                            style={{
+                              display:
+                                props.bidList.length < props.totalBids
+                                  ? 'visible'
+                                  : 'none'
+                            }}
+                            onClick={() => {
+                              this.props.ReadMoreBid(item.id, props.maxId);
+                            }}>
+                            Load More
+                          </button>
+                        </div>
                       ) : (
                         <EmptyList message="There is not submited any bid yet." />
                       )}
@@ -144,6 +171,8 @@ class AuctionDetail extends React.Component {
 
 const mapStateToProps = state => ({
   bidList: state.bid.bidList,
+  totalBids: state.bid.totalBids,
+  maxId: state.bid.maxId,
   liveList: state.auction.liveList,
   loggedInUser: state.partner.loggedInUser,
   error: state.auction.error,
@@ -155,6 +184,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
+      ResetLiveListBid,
+      ReadLiveBid,
+      ReadMoreBid,
       SubscribeAuction,
       UnSubscribeAuction,
       HandleClientUpdateAuction,

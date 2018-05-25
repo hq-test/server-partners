@@ -45,7 +45,7 @@ class BidItem extends React.Component {
         <span>#{data.id}</span> [
         <span>{data.status}</span> ]{' '}
         <span>{data.bidAmount.toLocaleString()} BHT</span> submited at{' '}
-        <span>{this.state.createdAt}</span>.
+        <span>{this.state.createdAt}</span> by <b>{data.partner.title}</b>.
       </div>
     );
   }

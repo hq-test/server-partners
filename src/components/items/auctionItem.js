@@ -19,7 +19,9 @@ class AuctionItem extends React.Component {
 
   componentDidMount() {
     updateDatetime = setInterval(() => {
-      this.setState({ startDate: moment(this.props.data.startAt).fromNow() });
+      this.setState({
+        startDate: moment(this.props.data.startAt).fromNow()
+      });
     }, 60000);
   }
 

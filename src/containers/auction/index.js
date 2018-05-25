@@ -84,16 +84,23 @@ class Auction extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    if (props.errorBid) {
+    if (props.errorBid && props.errorBid !== this.props.errorBid) {
+      console.log(props.errorBid);
       toast.error(props.errorBid);
     }
-    if (props.successBid) {
+    if (props.successBid && props.successBid !== this.props.successBid) {
+      console.log(props.successBid);
+
       toast.success(props.successBid);
     }
-    if (props.error) {
+    if (props.error && props.error !== this.props.error) {
+      console.log(props.error);
+
       toast.error(props.error);
     }
-    if (props.success) {
+    if (props.success && props.success !== this.props.success) {
+      console.log(props.success);
+
       toast.success(props.success);
     }
   }

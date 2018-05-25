@@ -26,9 +26,21 @@ export const UNSUBSCRIBE_FAILED = 'bid/UNSUBSCRIBE_FAILED';
 export const CLIENT_UPDATE_CREATE_SUCCESS = 'bid/CLIENT_UPDATE_CREATE_SUCCESS';
 export const CLIENT_UPDATE_UPDATE_SUCCESS = 'bid/CLIENT_UPDATE_UPDATE_SUCCESS';
 
+export const READ_LIVE_RESET = 'bid/READ_LIVE_RESET';
+export const READ_LIVE_REQUESTED = 'bid/READ_LIVE_REQUESTED';
+export const READ_LIVE_SUCCESS = 'bid/READ_LIVE_SUCCESS';
+export const READ_LIVE_FAILED = 'bid/READ_LIVE_FAILED';
+
+export const READ_MORE_REQUESTED = 'bid/READ_MORE_REQUESTED';
+export const READ_MORE_SUCCESS = 'bid/READ_MORE_SUCCESS';
+export const READ_MORE_FAILED = 'bid/READ_MORE_FAILED';
+
 const initialState = {
   bidList: [],
+  totalBids: 0,
+  maxId: null,
   list: [],
+  isReading: false,
   isCreating: false,
   error: null,
   success: null,
@@ -172,6 +184,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         bidList: [action.data, ...state.bidList],
+        totalBids: state.totalBids + 1,
         error: null,
         success: null
       };
@@ -183,6 +196,71 @@ export default (state = initialState, action) => {
           item => (item.id !== action.data.id ? item : action.data)
         ),
         error: null,
+        success: null
+      };
+
+    case READ_LIVE_RESET:
+      return {
+        ...state,
+        bidList: []
+      };
+
+    case READ_LIVE_REQUESTED:
+      return {
+        ...state,
+        isReading: true,
+        error: null,
+        success: null
+      };
+
+    case READ_LIVE_SUCCESS:
+      return {
+        ...state,
+        bidList: action.data.bids,
+        maxId:
+          action.data.bids && action.data.bids.length
+            ? action.data.bids[action.data.bids.length - 1].id
+            : null,
+        totalBids: action.data.totalBids,
+        isReading: !state.isReading,
+        error: null,
+        success: null
+      };
+
+    case READ_LIVE_FAILED:
+      return {
+        ...state,
+        isReading: !state.isReading,
+        error: action.error,
+        success: null
+      };
+
+    case READ_MORE_REQUESTED:
+      return {
+        ...state,
+        isReading: true,
+        error: null,
+        success: null
+      };
+
+    case READ_MORE_SUCCESS:
+      return {
+        ...state,
+        bidList: [...state.bidList, ...action.data],
+        isReading: !state.isReading,
+        maxId:
+          action.data && action.data.length
+            ? action.data[action.data.length - 1].id
+            : null,
+        error: null,
+        success: null
+      };
+
+    case READ_MORE_FAILED:
+      return {
+        ...state,
+        isReading: !state.isReading,
+        error: action.error,
         success: null
       };
 
@@ -280,131 +358,92 @@ export const ResetSearch = () => {
   };
 };
 
-//
-// export const Delete = id => {
-//   return dispatch => {
-//     dispatch({
-//       type: DELETE_REQUESTED
-//     });
-//     console.log('delete auction with id', id);
-//
-//     window.IO.socket.request(
-//       {
-//         method: 'delete',
-//         url: 'http://127.0.0.1:1337/api/auction/destroy',
-//         data: {
-//           id
-//         },
-//         headers: {}
-//       },
-//       function(response, jwres) {
-//         if (!response.result) {
-//           console.log(response); // => e.g. 403
-//           dispatch({
-//             type: DELETE_FAILED,
-//             error: response.error && response.error.message
-//           });
-//           setTimeout(() => {
-//             dispatch({
-//               type: RESET_ERROR
-//             });
-//           }, 3000);
-//           return;
-//         }
-//         dispatch({
-//           type: DELETE_SUCCESS,
-//           id
-//         });
-//         setTimeout(() => {
-//           dispatch({
-//             type: RESET_SUCCESS
-//           });
-//         }, 3000);
-//       }
-//     );
-//   };
-// };
-//
-// export const Read = () => {
-//   return dispatch => {
-//     dispatch({
-//       type: READ_REQUESTED
-//     });
-//     console.log('reading list of auctions');
-//
-//     window.IO.socket.request(
-//       {
-//         method: 'get',
-//         url: 'http://127.0.0.1:1337/api/auction/read/all',
-//         //data: data,
-//         headers: {}
-//       },
-//       function(response, jwres) {
-//         if (!response.result) {
-//           console.log(response); // => e.g. 403
-//           dispatch({
-//             type: READ_FAILED,
-//             error: response.error && response.error.message
-//           });
-//           setTimeout(() => {
-//             dispatch({
-//               type: RESET_ERROR
-//             });
-//           }, 3000);
-//           return;
-//         }
-//         dispatch({
-//           type: READ_SUCCESS,
-//           data: response.data
-//         });
-//       }
-//     );
-//   };
-// };
-//
-// export const Start = id => {
-//   return dispatch => {
-//     dispatch({
-//       type: DELETE_REQUESTED
-//     });
-//     console.log('start auction with id', id);
-//
-//     window.IO.socket.request(
-//       {
-//         method: 'put',
-//         url: 'http://127.0.0.1:1337/api/auction/start',
-//         data: {
-//           id
-//         },
-//         headers: {}
-//       },
-//       function(response, jwres) {
-//         if (!response.result) {
-//           console.log(response); // => e.g. 403
-//           dispatch({
-//             type: START_FAILED,
-//             error: response.error && response.error.message
-//           });
-//           setTimeout(() => {
-//             dispatch({
-//               type: RESET_ERROR
-//             });
-//           }, 3000);
-//           return;
-//         }
-//         dispatch({
-//           type: START_SUCCESS,
-//           data: response.data
-//         });
-//         setTimeout(() => {
-//           dispatch({
-//             type: RESET_SUCCESS
-//           });
-//         }, 3000);
-//       }
-//     );
-//   };
-// };
+export const ResetLiveList = () => {
+  return dispatch => {
+    dispatch({
+      type: READ_LIVE_RESET
+    });
+  };
+};
+
+export const ReadLive = auctionId => {
+  return dispatch => {
+    dispatch({
+      type: READ_LIVE_REQUESTED
+    });
+    console.log('reading recent list of bids for auction', auctionId);
+
+    window.IO.socket.request(
+      {
+        method: 'get',
+        url: 'http://127.0.0.1:1337/api/bid/read/live',
+        data: {
+          id: auctionId
+        },
+        headers: {}
+      },
+      function(response, jwres) {
+        if (!response.result) {
+          console.log(response); // => e.g. 403
+          dispatch({
+            type: READ_LIVE_FAILED,
+            error: response.error
+          });
+          setTimeout(() => {
+            dispatch({
+              type: RESET_ERROR
+            });
+          }, 3000);
+          return;
+        }
+        dispatch({
+          type: READ_LIVE_SUCCESS,
+          data: response.data
+        });
+      }
+    );
+  };
+};
+
+export const ReadMore = (auctionId, maxId) => {
+  return dispatch => {
+    dispatch({
+      type: READ_MORE_REQUESTED
+    });
+    console.log('reading recent list of bids for auction', auctionId, maxId);
+
+    window.IO.socket.request(
+      {
+        method: 'get',
+        url: 'http://127.0.0.1:1337/api/bid/read/more',
+        data: {
+          id: auctionId,
+          maxId
+        },
+        headers: {}
+      },
+      function(response, jwres) {
+        if (!response.result) {
+          console.log(response); // => e.g. 403
+          dispatch({
+            type: READ_MORE_FAILED,
+            error: response.error
+          });
+          setTimeout(() => {
+            dispatch({
+              type: RESET_ERROR
+            });
+          }, 3000);
+          return;
+        }
+        dispatch({
+          type: READ_MORE_SUCCESS,
+          data: response.data
+        });
+      }
+    );
+  };
+};
 
 export const Subscribe = auctionId => {
   return dispatch => {
@@ -477,7 +516,7 @@ export const UnSubscribe = auctionId => {
 };
 
 export const HandleClientCreate = data => {
-  console.log('HandleClientCreate bid', data);
+  console.log('HandleClientCreate bid ', data);
   return dispatch => {
     dispatch({
       type: CLIENT_UPDATE_CREATE_SUCCESS,
