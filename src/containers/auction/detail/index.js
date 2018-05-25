@@ -136,15 +136,22 @@ class AuctionDetail extends React.Component {
                 item =>
                   item.id == this.props.match.params.id ? (
                     <span key={item.id}>
-                      total items : {props.totalBids}
                       <AuctionItem data={item} />
                       {props.bidList && props.bidList.length ? (
                         <div>
+                          <div
+                            style={{
+                              margin: 10
+                            }}>
+                            View {props.bidList.length} of {props.totalBids}{' '}
+                            bids
+                          </div>
                           {props.bidList.map(bid => (
                             <BidItem key={bid.id} data={bid} />
                           ))}
                           <button
                             style={{
+                              margin: 10,
                               display:
                                 props.bidList.length < props.totalBids
                                   ? 'visible'

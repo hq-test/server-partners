@@ -156,7 +156,6 @@ export default (state = initialState, action) => {
       };
 
     case CLIENT_UPDATE_UPDATE_SUCCESS:
-      console.log('reading from out of this state =------ >>>>', state);
       let liveList = state.liveList.filter(item => item.id !== action.data.id);
       let archivedList = state.archivedList.filter(
         item => item.id !== action.data.id
