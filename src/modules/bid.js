@@ -14,29 +14,20 @@ export const SEARCH_RESET = 'bid/SEARCH_RESET';
 export const SEARCH_REQUESTED = 'bid/SEARCH_REQUESTED';
 export const SEARCH_SUCCESS = 'bid/SEARCH_SUCCESS';
 export const SEARCH_FAILED = 'bid/SEARCH_FAILED';
-//
-// export const READ_REQUESTED = 'bid/READ_REQUESTED';
-// export const READ_SUCCESS = 'bid/READ_SUCCESS';
-// export const READ_FAILED = 'bid/READ_FAILED';
-//
-// export const START_REQUESTED = 'bid/START_REQUESTED';
-// export const START_SUCCESS = 'bid/START_SUCCESS';
-// export const START_FAILED = 'bid/START_FAILED';
-//
-// export const SUBSCRIBE_REQUESTED = 'bid/SUBSCRIBE_REQUESTED';
-// export const SUBSCRIBE_SUCCESS = 'bid/SUBSCRIBE_SUCCESS';
-// export const SUBSCRIBE_FAILED = 'bid/SUBSCRIBE_FAILED';
-//
-// export const UNSUBSCRIBE_REQUESTED = 'bid/UNSUBSCRIBE_REQUESTED';
-// export const UNSUBSCRIBE_SUCCESS = 'bid/UNSUBSCRIBE_SUCCESS';
-// export const UNSUBSCRIBE_FAILED = 'bid/UNSUBSCRIBE_FAILED';
 
-// export const CLIENT_UPDATE_CREATE_SUCCESS = 'bid/CLIENT_UPDATE_CREATE_SUCCESS';
-// export const CLIENT_UPDATE_UPDATE_SUCCESS = 'bid/CLIENT_UPDATE_UPDATE_SUCCESS';
-// export const CLIENT_UPDATE_DESTROY_SUCCESS =
-//   'bid/CLIENT_UPDATE_DESTROY_SUCCESS';
+export const SUBSCRIBE_REQUESTED = 'bid/SUBSCRIBE_REQUESTED';
+export const SUBSCRIBE_SUCCESS = 'bid/SUBSCRIBE_SUCCESS';
+export const SUBSCRIBE_FAILED = 'bid/SUBSCRIBE_FAILED';
+
+export const UNSUBSCRIBE_REQUESTED = 'bid/UNSUBSCRIBE_REQUESTED';
+export const UNSUBSCRIBE_SUCCESS = 'bid/UNSUBSCRIBE_SUCCESS';
+export const UNSUBSCRIBE_FAILED = 'bid/UNSUBSCRIBE_FAILED';
+
+export const CLIENT_UPDATE_CREATE_SUCCESS = 'bid/CLIENT_UPDATE_CREATE_SUCCESS';
+export const CLIENT_UPDATE_UPDATE_SUCCESS = 'bid/CLIENT_UPDATE_UPDATE_SUCCESS';
 
 const initialState = {
+  bidList: [],
   list: [],
   isCreating: false,
   error: null,
@@ -134,129 +125,66 @@ export default (state = initialState, action) => {
         searchSuccess: null
       };
 
-    //
-    // case DELETE_REQUESTED:
-    //   return {
-    //     ...state,
-    //     isDeleting: true,
-    //     error: null,
-    //     success: null
-    //   };
-    //
-    // case DELETE_SUCCESS:
-    //   return {
-    //     ...state,
-    //     list: state.list.filter(item => item.id !== action.id),
-    //     isDeleting: !state.isDeleting,
-    //     error: null,
-    //     success: 'delete successfully'
-    //   };
-    //
-    // case DELETE_FAILED:
-    //   return {
-    //     ...state,
-    //     isDeleting: !state.isDeleting,
-    //     error: action.error,
-    //     success: null
-    //   };
-    //
-    // case START_REQUESTED:
-    //   return {
-    //     ...state,
-    //     isStarting: true,
-    //     error: null,
-    //     success: null
-    //   };
-    //
-    // case START_SUCCESS:
-    //   console.log('new start', action.data);
-    //   return {
-    //     ...state,
-    //     isStarting: !state.isStarting,
-    //     error: null,
-    //     success: 'live auction successfully'
-    //   };
-    //
-    // case START_FAILED:
-    //   return {
-    //     ...state,
-    //     isStarting: !state.isStarting,
-    //     error: action.error,
-    //     success: null
-    //   };
-    //
-    // case SUBSCRIBE_REQUESTED:
-    //   return {
-    //     ...state,
-    //     isSubscribing: true,
-    //     error: null,
-    //     success: null
-    //   };
-    //
-    // case SUBSCRIBE_SUCCESS:
-    //   return {
-    //     ...state,
-    //     isSubscribing: false,
-    //     isSubscribed: true
-    //   };
-    //
-    // case SUBSCRIBE_FAILED:
-    //   return {
-    //     ...state,
-    //     isSubscribing: false,
-    //     isSubscribed: false
-    //   };
-    //
-    // case UNSUBSCRIBE_REQUESTED:
-    //   return {
-    //     ...state,
-    //     isUnSubscribing: true,
-    //     error: null,
-    //     success: null
-    //   };
-    //
-    // case UNSUBSCRIBE_SUCCESS:
-    //   return {
-    //     ...state,
-    //     isUnSubscribing: false,
-    //     isSubscribed: false
-    //   };
-    //
-    // case UNSUBSCRIBE_FAILED:
-    //   return {
-    //     ...state,
-    //     isUnSubscribing: false
-    //   };
-    //
-    // case CLIENT_UPDATE_CREATE_SUCCESS:
-    //   return {
-    //     ...state,
-    //     list: _.orderBy([action.data, ...state.list], 'endAt', 'DESC'),
-    //     error: null,
-    //     success: null
-    //   };
-    //
-    // case CLIENT_UPDATE_UPDATE_SUCCESS:
-    //   return {
-    //     ...state,
-    //     list: _.orderBy(
-    //       state.list.map(
-    //         item => (item.id !== action.data.id ? item : action.data)
-    //       ),
-    //       'endAt',
-    //       'DESC'
-    //     ),
-    //     error: null,
-    //     success: null
-    //   };
-    //
-    // case CLIENT_UPDATE_DESTROY_SUCCESS:
-    //   return {
-    //     ...state,
-    //     list: state.list.filter(item => item.id !== action.id),
-    //     error: null,
-    //     success: null
-    //   };
+    case SUBSCRIBE_REQUESTED:
+      return {
+        ...state,
+        isSubscribing: true,
+        error: null,
+        success: null
+      };
+
+    case SUBSCRIBE_SUCCESS:
+      return {
+        ...state,
+        isSubscribing: false,
+        isSubscribed: true
+      };
+
+    case SUBSCRIBE_FAILED:
+      return {
+        ...state,
+        isSubscribing: false,
+        isSubscribed: false
+      };
+
+    case UNSUBSCRIBE_REQUESTED:
+      return {
+        ...state,
+        isUnSubscribing: true,
+        error: null,
+        success: null
+      };
+
+    case UNSUBSCRIBE_SUCCESS:
+      return {
+        ...state,
+        isUnSubscribing: false,
+        isSubscribed: false
+      };
+
+    case UNSUBSCRIBE_FAILED:
+      return {
+        ...state,
+        isUnSubscribing: false
+      };
+
+    case CLIENT_UPDATE_CREATE_SUCCESS:
+      return {
+        ...state,
+        bidList: [action.data, ...state.bidList],
+        error: null,
+        success: null
+      };
+
+    case CLIENT_UPDATE_UPDATE_SUCCESS:
+      return {
+        ...state,
+        bidList: state.bidList.map(
+          item => (item.id !== action.data.id ? item : action.data)
+        ),
+        error: null,
+        success: null
+      };
 
     default:
       return state;
@@ -477,99 +405,94 @@ export const ResetSearch = () => {
 //     );
 //   };
 // };
-//
-// export const Subscribe = () => {
-//   return dispatch => {
-//     dispatch({
-//       type: SUBSCRIBE_REQUESTED
-//     });
-//     console.log('subscribing to list of auctions');
-//
-//     window.IO.socket.request(
-//       {
-//         method: 'post',
-//         url: 'http://127.0.0.1:1337/api/auction/subscribe',
-//         headers: {}
-//       },
-//       function(response, jwres) {
-//         if (!response.result) {
-//           console.log(response); // => e.g. 403
-//           dispatch({
-//             type: SUBSCRIBE_FAILED
-//           });
-//           return;
-//         }
-//         dispatch({
-//           type: SUBSCRIBE_SUCCESS
-//         });
-//       }
-//     );
-//   };
-// };
-//
-// export const UnSubscribe = () => {
-//   return dispatch => {
-//     dispatch({
-//       type: UNSUBSCRIBE_REQUESTED
-//     });
-//     console.log('subscribing to list of auctions');
-//
-//     window.IO.socket.request(
-//       {
-//         method: 'post',
-//         url: 'http://127.0.0.1:1337/api/auction/unsubscribe',
-//         headers: {}
-//       },
-//       function(response, jwres) {
-//         if (!response.result) {
-//           console.log(response); // => e.g. 403
-//           dispatch({
-//             type: UNSUBSCRIBE_FAILED,
-//             error: response.error
-//           });
-//           setTimeout(() => {
-//             dispatch({
-//               type: RESET_ERROR
-//             });
-//           }, 3000);
-//           return;
-//         }
-//         dispatch({
-//           type: UNSUBSCRIBE_SUCCESS
-//         });
-//       }
-//     );
-//   };
-// };
-//
-// export const HandleClientCreate = data => {
-//   console.log('HandleClientCreate', data);
-//   return dispatch => {
-//     dispatch({
-//       type: CLIENT_UPDATE_CREATE_SUCCESS,
-//       data: data
-//     });
-//   };
-// };
-//
-// export const HandleClientUpdate = data => {
-//   console.log('HandleClientUpdate', data);
-//
-//   return dispatch => {
-//     dispatch({
-//       type: CLIENT_UPDATE_UPDATE_SUCCESS,
-//       data: data
-//     });
-//   };
-// };
-//
-// export const HandleClientDestroy = id => {
-//   console.log('HandleClientDestroy', id);
-//
-//   return dispatch => {
-//     dispatch({
-//       type: CLIENT_UPDATE_DESTROY_SUCCESS,
-//       id: id
-//     });
-//   };
-// };
+
+export const Subscribe = auctionId => {
+  return dispatch => {
+    dispatch({
+      type: SUBSCRIBE_REQUESTED
+    });
+    console.log('subscribing to an auction id', auctionId);
+
+    window.IO.socket.request(
+      {
+        method: 'post',
+        url: 'http://127.0.0.1:1337/api/auction/detail/subscribe',
+        data: {
+          auctionId
+        },
+        headers: {}
+      },
+      function(response, jwres) {
+        if (!response.result) {
+          console.log(response); // => e.g. 403
+          dispatch({
+            type: SUBSCRIBE_FAILED
+          });
+          return;
+        }
+        dispatch({
+          type: SUBSCRIBE_SUCCESS
+        });
+      }
+    );
+  };
+};
+
+export const UnSubscribe = auctionId => {
+  return dispatch => {
+    dispatch({
+      type: UNSUBSCRIBE_REQUESTED
+    });
+    console.log('unsubscribing to auction id', auctionId);
+
+    window.IO.socket.request(
+      {
+        method: 'post',
+        url: 'http://127.0.0.1:1337/api/auction/detail/unsubscribe',
+        data: {
+          auctionId
+        },
+        headers: {}
+      },
+      function(response, jwres) {
+        if (!response.result) {
+          console.log(response); // => e.g. 403
+          dispatch({
+            type: UNSUBSCRIBE_FAILED,
+            error: response.error
+          });
+          setTimeout(() => {
+            dispatch({
+              type: RESET_ERROR
+            });
+          }, 3000);
+          return;
+        }
+        dispatch({
+          type: UNSUBSCRIBE_SUCCESS
+        });
+      }
+    );
+  };
+};
+
+export const HandleClientCreate = data => {
+  console.log('HandleClientCreate bid', data);
+  return dispatch => {
+    dispatch({
+      type: CLIENT_UPDATE_CREATE_SUCCESS,
+      data: data
+    });
+  };
+};
+
+export const HandleClientUpdate = data => {
+  console.log('HandleClientUpdate bid', data);
+
+  return dispatch => {
+    dispatch({
+      type: CLIENT_UPDATE_UPDATE_SUCCESS,
+      data: data
+    });
+  };
+};

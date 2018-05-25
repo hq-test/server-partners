@@ -13,7 +13,32 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Logout } from '../../modules/partner';
 
+import {
+  ReadLive as LiveAuction,
+  ReadArchived as ArchivedAuction
+} from '../../modules/auction';
+
 class App extends React.Component {
+  componentDidMount() {
+    if (this.props.loggedInUser) {
+      this.props.LiveAuction();
+      this.props.ArchivedAuction();
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.props.loggedInUser) {
+      this.props.UnSubscribeAuction();
+    }
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.loggedInUser) {
+      props.LiveAuction();
+      props.ArchivedAuction();
+    }
+  }
+
   render() {
     return (
       <div>
@@ -67,6 +92,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
+      ArchivedAuction,
+      LiveAuction,
       Logout,
       RedirectLogin: () => push('/')
     },

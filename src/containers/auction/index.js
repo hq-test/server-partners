@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import EmptyList from '../../components/lists/emptyList.js';
 import AuctionList from '../../components/lists/auctionList.js';
 import {
-  ReadLive as LiveAuction,
-  ReadArchived as ArchivedAuction,
   Subscribe as SubscribeAuction,
   UnSubscribe as UnSubscribeAuction,
   HandleClientCreate as HandleClientCreateAuction,
@@ -25,9 +23,6 @@ class Auction extends React.Component {
 
   componentDidMount() {
     if (this.props.loggedInUser) {
-      this.props.LiveAuction();
-      this.props.ArchivedAuction();
-
       this.props.SubscribeAuction();
       const that = this;
       window.IO.socket.on('auction_model_create', function(data) {
@@ -164,8 +159,6 @@ const mapDispatchToProps = dispatch =>
     {
       SubscribeAuction,
       UnSubscribeAuction,
-      ArchivedAuction,
-      LiveAuction,
       HandleClientCreateAuction,
       HandleClientUpdateAuction,
       HandleClientDestroyAuction,
