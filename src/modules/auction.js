@@ -216,7 +216,7 @@ export const ReadLive = () => {
           console.log(response); // => e.g. 403
           dispatch({
             type: READ_LIVE_FAILED,
-            error: response.error
+            error: response.error && response.error.message
           });
           setTimeout(() => {
             dispatch({
@@ -311,7 +311,7 @@ export const UnSubscribe = () => {
           console.log(response); // => e.g. 403
           dispatch({
             type: UNSUBSCRIBE_FAILED,
-            error: response.error
+            error: response.error && response.error.message
           });
           setTimeout(() => {
             dispatch({

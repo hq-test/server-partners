@@ -30,10 +30,14 @@ class LoginForm extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    if (props.error) {
+    if (props.error && props.error !== this.props.error) {
+      console.log(props.error);
+
       toast.error(props.error);
     }
-    if (props.success) {
+    if (props.success && props.success !== this.props.success) {
+      console.log(props.success);
+
       toast.success(props.success);
     }
   }

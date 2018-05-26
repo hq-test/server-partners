@@ -134,11 +134,10 @@ export const Read = () => {
         headers: {}
       },
       function(response, jwres) {
-        if (jwres.error) {
-          console.log(jwres); // => e.g. 403
+        if (!response.result) {
           dispatch({
             type: READ_FAILED,
-            error: jwres.error.message
+            error: response.error && response.error.message
           });
           setTimeout(() => {
             dispatch({
@@ -149,7 +148,7 @@ export const Read = () => {
         }
         dispatch({
           type: READ_SUCCESS,
-          data: response
+          data: response.data
         });
       }
     );
@@ -173,7 +172,7 @@ export const Login = data => {
         if (!response.result) {
           dispatch({
             type: LOGIN_FAILED,
-            error: response.error
+            error: response.error && response.error.message
           });
           setTimeout(() => {
             dispatch({
@@ -208,7 +207,7 @@ export const Logout = () => {
         if (!response.result) {
           dispatch({
             type: LOGOUT_FAILED,
-            error: response.error
+            error: response.error && response.error.message
           });
           setTimeout(() => {
             dispatch({

@@ -59,8 +59,12 @@ class App extends React.Component {
         </div>
         {this.props.isLoggedIn ? (
           <header>
-            <Link to="/">Auctions</Link>
-            <Link to="/search">Search</Link>
+            <Link style={{ padding: 10 }} to="/">
+              Auctions
+            </Link>
+            <Link style={{ padding: 10 }} to="/search">
+              Search
+            </Link>
           </header>
         ) : null}
         <main>
