@@ -43,7 +43,10 @@ class App extends React.Component {
     return (
       <div>
         <div>
+          {/* Toast placeholder */}
           <ToastContainer autoClose={5000} />
+
+          {/* If login, show logged in partner and LOGOUT button */}
           {this.props.isLoggedIn ? (
             <div>
               Welcome <b>{this.props.loggedInUser.title}</b>,{' '}
@@ -57,6 +60,8 @@ class App extends React.Component {
             </div>
           ) : null}
         </div>
+
+        {/* show navigation for pages agter login */}
         {this.props.isLoggedIn ? (
           <header>
             <Link style={{ padding: 10 }} to="/">
@@ -67,6 +72,8 @@ class App extends React.Component {
             </Link>
           </header>
         ) : null}
+
+        {/* pages placeholder with routes */}
         <main>
           <Route
             exact

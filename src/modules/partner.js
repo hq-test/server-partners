@@ -1,3 +1,14 @@
+/***************************************************************************
+ *                                                                          *
+ * Partner Module                                                           *
+ *                                                                          *
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                          *
+ * Actions                                                                  *
+ *                                                                          *
+ ***************************************************************************/
 export const RESET_ERROR = 'partner/RESET_ERROR';
 export const RESET_SUCCESS = 'partner/RESET_SUCCESS';
 
@@ -13,16 +24,26 @@ export const LOGOUT_REQUESTED = 'partner/LOGOUT_REQUESTED';
 export const LOGOUT_SUCCESS = 'partner/LOGOUT_SUCCESS';
 export const LOGOUT_FAILED = 'partner/LOGOUT_FAILED';
 
+/***************************************************************************
+ *                                                                          *
+ * Initial State                                                            *
+ *                                                                          *
+ ***************************************************************************/
 const initialState = {
-  list: [],
-  isReading: false,
-  error: null,
-  success: null,
-  isLoggedIn: false,
-  isLogining: false,
-  loggedInUser: null
+  list: [], // list of partners
+  isReading: false, // is in reading process and filling partner list
+  error: null, // error message store here
+  success: null, // success message store here
+  isLoggedIn: false, // is partner logged in
+  isLogining: false, // is trying to login
+  loggedInUser: null // partner record that logged in the panel
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Reducers                                                                 *
+ *                                                                          *
+ ***************************************************************************/
 export default (state = initialState, action) => {
   switch (action.type) {
     case RESET_ERROR:
@@ -105,7 +126,6 @@ export default (state = initialState, action) => {
         loggedInUser: null,
         isLoggedIn: false,
         error: null
-        //success: 'logout successfully'
       };
 
     case LOGOUT_FAILED:
@@ -119,12 +139,22 @@ export default (state = initialState, action) => {
   }
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Action Creators                                                          *
+ *                                                                          *
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                          *
+ * read partners                                                            *
+ *                                                                          *
+ ***************************************************************************/
 export const Read = () => {
   return dispatch => {
     dispatch({
       type: READ_REQUESTED
     });
-    console.log('reading list of partners');
 
     window.IO.socket.request(
       {
@@ -155,6 +185,11 @@ export const Read = () => {
   };
 };
 
+/***************************************************************************
+ *                                                                          *
+ * login as a partner                                                       *
+ *                                                                          *
+ ***************************************************************************/
 export const Login = data => {
   return dispatch => {
     dispatch({
@@ -190,6 +225,11 @@ export const Login = data => {
   };
 };
 
+/***************************************************************************
+ *                                                                          *
+ * logout partner                                                           *
+ *                                                                          *
+ ***************************************************************************/
 export const Logout = () => {
   return dispatch => {
     dispatch({
@@ -200,7 +240,6 @@ export const Logout = () => {
       {
         method: 'post',
         url: 'http://127.0.0.1:1337/api/partner/logout',
-        //data: data,
         headers: {}
       },
       function(response, jwres) {

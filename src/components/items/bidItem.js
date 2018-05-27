@@ -14,9 +14,16 @@ class BidItem extends React.Component {
   }
 
   componentDidMount() {
-    updateDatetime = setInterval(() => {
-      this.setState({ createdAt: moment(this.props.data.createdAt).fromNow() });
-    }, 60000);
+    updateDatetime = setInterval(
+      () => {
+        this.setState({
+          createdAt: moment(this.props.data.createdAt).fromNow()
+        });
+      },
+
+      // update the times every 1 minute
+      60000
+    );
   }
 
   componentWillUnmount() {

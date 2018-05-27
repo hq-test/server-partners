@@ -26,22 +26,18 @@ class Auction extends React.Component {
       this.props.SubscribeAuction();
       const that = this;
       window.IO.socket.on('auction_model_create', function(data) {
-        console.log('>>receive auction model create message', data);
         that.props.HandleClientCreateAuction(data);
       });
 
       window.IO.socket.on('auction_model_update', function(data) {
-        console.log('>>receive auction model update message', data);
         that.props.HandleClientUpdateAuction(data);
       });
 
       window.IO.socket.on('auction_model_destroy', function(data) {
-        console.log('>>receive auction model destroy message', data);
         that.props.HandleClientDestroyAuction(data.id);
       });
 
       window.IO.socket.on('auction_model_close_winner', function(data) {
-        console.log('>>>>>> receive auction close message WIN', data);
         toast.success(
           `Congratulations, Auction ${data.title} closed and your bid win.`,
           {
@@ -51,14 +47,12 @@ class Auction extends React.Component {
       });
 
       window.IO.socket.on('auction_model_close_loser', function(data) {
-        console.log('>>>>>> receive auction close message LOSE', data);
         toast.error(`Sorry, Auction ${data.title} closed and your bid lose.`, {
           position: toast.POSITION.BUTTOM_CENTER
         });
       });
 
       window.IO.socket.on('bid_model_loser', function(data) {
-        console.log('>>>>>> receive bid loser message', data);
         toast.error(
           `Sorry, Your bid with ID ${data.id} for auction ID ${
             data.auction
@@ -85,22 +79,15 @@ class Auction extends React.Component {
 
   componentWillReceiveProps(props) {
     if (props.errorBid && props.errorBid !== this.props.errorBid) {
-      console.log(props.errorBid);
       toast.error(props.errorBid);
     }
     if (props.successBid && props.successBid !== this.props.successBid) {
-      console.log(props.successBid);
-
       toast.success(props.successBid);
     }
     if (props.error && props.error !== this.props.error) {
-      console.log(props.error);
-
       toast.error(props.error);
     }
     if (props.success && props.success !== this.props.success) {
-      console.log(props.success);
-
       toast.success(props.success);
     }
   }
@@ -137,11 +124,13 @@ class Auction extends React.Component {
 
         {this.state.activeLink === 'live' ? (
           props.liveList.length ? (
+            /* show live auction list */
             <AuctionList items={props.liveList} onView={props.View} />
           ) : (
             <EmptyList message="Please wait. There is no live auction yet, as soon as any auction created by admin it will show here." />
           )
         ) : props.archivedList.length ? (
+          /* show archived auction list */
           <AuctionList items={props.archivedList} />
         ) : (
           <EmptyList message="Archive list of auctions is empty" />

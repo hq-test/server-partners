@@ -13,8 +13,6 @@ class AddBidForm extends React.Component {
       )
     };
 
-    console.log('in addBid constructor', this.state);
-
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -37,7 +35,6 @@ class AddBidForm extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('new props received', nextProps);
     this.setState({
       amount: Math.ceil(
         nextProps.minimumAllowedBid + nextProps.minimumAllowedBid * 0.05

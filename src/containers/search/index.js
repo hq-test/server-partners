@@ -14,7 +14,6 @@ class Search extends React.Component {
     if (props.searchSuccess) {
       toast.success(props.searchSuccess);
     }
-    console.log('componentWillReceiveProps', props);
   }
 
   componentWillUnmount() {

@@ -1,5 +1,21 @@
+/***************************************************************************
+ *                                                                          *
+ * Auction Module                                                           *
+ *                                                                          *
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                          *
+ * Load Libraries                                                           *
+ *                                                                          *
+ ***************************************************************************/
 var _ = require('lodash');
 
+/***************************************************************************
+ *                                                                          *
+ * Actions                                                                  *
+ *                                                                          *
+ ***************************************************************************/
 export const RESET_ERROR = 'auction/RESET_ERROR';
 export const RESET_SUCCESS = 'auction/RESET_SUCCESS';
 
@@ -26,17 +42,27 @@ export const CLIENT_UPDATE_UPDATE_SUCCESS =
 export const CLIENT_UPDATE_DESTROY_SUCCESS =
   'auction/CLIENT_UPDATE_DESTROY_SUCCESS';
 
+/***************************************************************************
+ *                                                                          *
+ * Initial State                                                            *
+ *                                                                          *
+ ***************************************************************************/
 const initialState = {
-  liveList: [],
-  archivedList: [],
-  isReading: false,
-  error: null,
-  success: null,
-  isSubscribing: false,
-  isUnSubscribing: false,
-  isSubscribed: false
+  liveList: [], // list of live auctions
+  archivedList: [], // list of archived auctions
+  isReading: false, // is in reading process and filling auction list
+  error: null, // error message of action creators
+  success: null, // success message of action creators
+  isSubscribing: false, // is in subscribe process
+  isUnSubscribing: false, // is in unsubscibe process
+  isSubscribed: false // does it currently subscibed to auction room
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Reducers                                                                 *
+ *                                                                          *
+ ***************************************************************************/
 export default (state = initialState, action) => {
   switch (action.type) {
     case RESET_ERROR:
@@ -147,28 +173,38 @@ export default (state = initialState, action) => {
     case CLIENT_UPDATE_CREATE_SUCCESS:
       return {
         ...state,
+
+        // reorder live list of auctions by duration
         liveList:
           action.data.isRunning && action.data.isActive
             ? _.orderBy([...state.liveList, action.data], 'endAt', 'DESC')
             : state.liveList,
+
         error: null,
         success: null
       };
 
     case CLIENT_UPDATE_UPDATE_SUCCESS:
+      // remove updated auction from live list
       let liveList = state.liveList.filter(item => item.id !== action.data.id);
+
+      // remove updated auction from archived list
       let archivedList = state.archivedList.filter(
         item => item.id !== action.data.id
       );
+
+      // check to see if necessary to add it in LIVE list
       liveList =
         action.data.isRunning && action.data.isActive
           ? [...liveList, action.data]
           : liveList;
 
+      // check to see if necessary to add it in ARCHIVED list
       archivedList =
         !action.data.isRunning && action.data.isActive && action.data.endAt > 0
           ? [action.data, ...archivedList]
           : archivedList;
+
       return {
         ...state,
         liveList: liveList,
@@ -180,11 +216,15 @@ export default (state = initialState, action) => {
     case CLIENT_UPDATE_DESTROY_SUCCESS:
       return {
         ...state,
+
+        // remove auction from LIVE list and reorder the list
         liveList: _.orderBy(
           state.liveList.filter(item => item.id !== action.id),
           'endAt',
           'DESC'
         ),
+
+        // remove auction from ARCHIVED list and reorder the list
         archivedList: _.orderBy(
           state.archivedList.filter(item => item.id !== action.id),
           'endAt',
@@ -198,12 +238,22 @@ export default (state = initialState, action) => {
   }
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Action Creators                                                          *
+ *                                                                          *
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                          *
+ * Read LIVE auction list                                                   *
+ *                                                                          *
+ ***************************************************************************/
 export const ReadLive = () => {
   return dispatch => {
     dispatch({
       type: READ_LIVE_REQUESTED
     });
-    console.log('reading live list of auctions');
 
     window.IO.socket.request(
       {
@@ -213,7 +263,6 @@ export const ReadLive = () => {
       },
       function(response, jwres) {
         if (!response.result) {
-          console.log(response); // => e.g. 403
           dispatch({
             type: READ_LIVE_FAILED,
             error: response.error && response.error.message
@@ -234,12 +283,16 @@ export const ReadLive = () => {
   };
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Read archived auction list                                               *
+ *                                                                          *
+ ***************************************************************************/
 export const ReadArchived = () => {
   return dispatch => {
     dispatch({
       type: READ_ARCHIVED_REQUESTED
     });
-    console.log('reading archived list of auctions');
 
     window.IO.socket.request(
       {
@@ -249,7 +302,6 @@ export const ReadArchived = () => {
       },
       function(response, jwres) {
         if (!response.result) {
-          console.log(response); // => e.g. 403
           dispatch({
             type: READ_ARCHIVED_FAILED
           });
@@ -264,12 +316,16 @@ export const ReadArchived = () => {
   };
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Subscribe to auction model room                                          *
+ *                                                                          *
+ ***************************************************************************/
 export const Subscribe = () => {
   return dispatch => {
     dispatch({
       type: SUBSCRIBE_REQUESTED
     });
-    console.log('subscribing to list of auctions');
 
     window.IO.socket.request(
       {
@@ -279,7 +335,6 @@ export const Subscribe = () => {
       },
       function(response, jwres) {
         if (!response.result) {
-          console.log(response); // => e.g. 403
           dispatch({
             type: SUBSCRIBE_FAILED
           });
@@ -293,12 +348,16 @@ export const Subscribe = () => {
   };
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Unsubscribe to auction model room                                        *
+ *                                                                          *
+ ***************************************************************************/
 export const UnSubscribe = () => {
   return dispatch => {
     dispatch({
       type: UNSUBSCRIBE_REQUESTED
     });
-    console.log('UnSubscribing to list of auctions');
 
     window.IO.socket.request(
       {
@@ -308,7 +367,6 @@ export const UnSubscribe = () => {
       },
       function(response, jwres) {
         if (!response.result) {
-          console.log(response); // => e.g. 403
           dispatch({
             type: UNSUBSCRIBE_FAILED,
             error: response.error && response.error.message
@@ -328,8 +386,12 @@ export const UnSubscribe = () => {
   };
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Update auction list when a create message receive                        *
+ *                                                                          *
+ ***************************************************************************/
 export const HandleClientCreate = data => {
-  console.log('HandleClientCreate', data);
   return dispatch => {
     dispatch({
       type: CLIENT_UPDATE_CREATE_SUCCESS,
@@ -338,9 +400,12 @@ export const HandleClientCreate = data => {
   };
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Update auction list when an update message receive                       *
+ *                                                                          *
+ ***************************************************************************/
 export const HandleClientUpdate = (data, partnerId) => {
-  console.log('HandleClientUpdate', data);
-
   return dispatch => {
     dispatch({
       type: CLIENT_UPDATE_UPDATE_SUCCESS,
@@ -349,9 +414,12 @@ export const HandleClientUpdate = (data, partnerId) => {
   };
 };
 
+/***************************************************************************
+ *                                                                          *
+ * Update auction list when a remove message receive                        *
+ *                                                                          *
+ ***************************************************************************/
 export const HandleClientDestroy = id => {
-  console.log('HandleClientDestroy', id);
-
   return dispatch => {
     dispatch({
       type: CLIENT_UPDATE_DESTROY_SUCCESS,

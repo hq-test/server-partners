@@ -18,11 +18,15 @@ class AuctionItem extends React.Component {
   }
 
   componentDidMount() {
-    updateDatetime = setInterval(() => {
-      this.setState({
-        startDate: moment(this.props.data.startAt).fromNow()
-      });
-    }, 60000);
+    updateDatetime = setInterval(
+      () => {
+        this.setState({
+          startDate: moment(this.props.data.startAt).fromNow()
+        });
+      },
+      // update the times every 1 minute
+      60000
+    );
   }
 
   componentWillUnmount() {
@@ -32,16 +36,19 @@ class AuctionItem extends React.Component {
   render() {
     const { data, loggedInUser, isReadOnly = false } = this.props;
 
+    // define the minimum allowed bid for this auction
     const minimumAllowedBid =
       data.bids && data.bids.length
         ? data.bids[0].bidAmount
         : data.minimumAllowedBid;
 
+    // define last bid price of this auction
     const lastBid =
       data.bids && data.bids.length
         ? data.bids[0].bidAmount.toLocaleString()
         : '-';
 
+    // define this auction status
     const isWinner =
       data.bids && data.bids.length
         ? data.bids[0].status === 'Approved' &&
@@ -63,11 +70,14 @@ class AuctionItem extends React.Component {
           padding: 10,
           float: 'left'
         }}>
+        {/* show auction title */}
         <h1>
           <Link to={`/auction/${data.id}`}>
             #{data.id}: {data.title}
           </Link>
         </h1>
+
+        {/* show auction image */}
         <Link to={`/auction/${data.id}`}>
           <img
             style={{ width: '45vw', float: 'left' }}
@@ -81,10 +91,14 @@ class AuctionItem extends React.Component {
             }
           />
         </Link>
+
+        {/* show auction detail */}
         <div style={{ width: '45vw', float: 'right', padding: 20 }}>
           <p>
-            start from{' '}
-            <span style={{ color: 'green' }}>{this.state.startDate}</span> for{' '}
+            start from {/* auction start at */}
+            <span style={{ color: 'green' }}>
+              {this.state.startDate}
+            </span> for {/* auction duration */}
             <span style={{ color: 'green' }}>
               {data.endAt > new Date().getTime() ? (
                 <Countdown date={data.endAt} />
@@ -93,7 +107,11 @@ class AuctionItem extends React.Component {
               )}
             </span>
           </p>
+
+          {/* room title */}
           <p>{data.room && data.room.title}</p>
+
+          {/* minimum allowed bid price */}
           <p>
             Minimum Allowed Bid was{' '}
             <span style={{ color: 'black' }}>
@@ -101,12 +119,17 @@ class AuctionItem extends React.Component {
             </span>{' '}
             BHT
           </p>
+
+          {/* last bid price */}
           <p>
             Last bid was <span style={{ color: 'green' }}>{lastBid}</span> BHT
           </p>
+
+          {/* If it is a LIVE bid show add bid form */}
           {data.isRunning ? (
             isReadOnly ? null : (
               <span>
+                {/* add new bid form */}
                 <AddBidForm
                   auctionId={data.id}
                   minimumAllowedBid={minimumAllowedBid}

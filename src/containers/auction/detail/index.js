@@ -23,7 +23,6 @@ import {
 } from '../../../modules/bid';
 
 import { toast } from 'react-toastify';
-// var _ = require('lodash');
 
 class AuctionDetail extends React.Component {
   componentDidMount() {
@@ -35,17 +34,14 @@ class AuctionDetail extends React.Component {
       const that = this;
 
       window.IO.socket.on('auction_model_update', function(data) {
-        console.log('>>receive auction model update message', data);
         that.props.HandleClientUpdateAuction(data);
       });
 
       window.IO.socket.on('auction_model_destroy', function(data) {
-        console.log('>>receive auction model destroy message', data);
         that.props.HandleClientDestroyAuction(data.id);
       });
 
       window.IO.socket.on('auction_model_close_winner', function(data) {
-        console.log('>>>>>> receive auction close message WIN', data);
         toast.success(
           `Congratulations, Auction ${data.title} closed and your bid win.`,
           {
@@ -55,14 +51,12 @@ class AuctionDetail extends React.Component {
       });
 
       window.IO.socket.on('auction_model_close_loser', function(data) {
-        console.log('>>>>>> receive auction close message LOSE', data);
         toast.error(`Sorry, Auction ${data.title} closed and your bid lose.`, {
           position: toast.POSITION.BUTTOM_CENTER
         });
       });
 
       window.IO.socket.on('bid_model_loser', function(data) {
-        console.log('>>>>>> receive bid loser message', data);
         toast.error(
           `Sorry, Your bid with ID ${data.id} for auction ID ${
             data.auction
@@ -74,12 +68,10 @@ class AuctionDetail extends React.Component {
       });
 
       window.IO.socket.on('bid_model_update', function(data) {
-        console.log('>>receive bid model update message', data);
         that.props.HandleClientUpdateBid(data);
       });
 
       window.IO.socket.on('bid_model_create', function(data) {
-        console.log('>>receive bid model create message', data);
         that.props.HandleClientCreateBid(data);
       });
     }
@@ -104,22 +96,15 @@ class AuctionDetail extends React.Component {
 
   componentWillReceiveProps(props) {
     if (props.errorBid && props.errorBid !== this.props.errorBid) {
-      console.log(props.errorBid);
       toast.error(props.errorBid);
     }
     if (props.successBid && props.successBid !== this.props.successBid) {
-      console.log(props.successBid);
-
       toast.success(props.successBid);
     }
     if (props.error && props.error !== this.props.error) {
-      console.log(props.error);
-
       toast.error(props.error);
     }
     if (props.success && props.success !== this.props.success) {
-      console.log(props.success);
-
       toast.success(props.success);
     }
   }
@@ -136,9 +121,13 @@ class AuctionDetail extends React.Component {
                 item =>
                   item.id == this.props.match.params.id ? (
                     <span key={item.id}>
+                      {/* show auction detail live */}
                       <AuctionItem data={item} />
+
+                      {/* show bid list and related load button */}
                       {props.bidList && props.bidList.length ? (
                         <div>
+                          {/* show statistics of bids */}
                           <div
                             style={{
                               margin: 10
@@ -146,9 +135,13 @@ class AuctionDetail extends React.Component {
                             View {props.bidList.length} of {props.totalBids}{' '}
                             bids
                           </div>
+
+                          {/* show list of bids */}
                           {props.bidList.map(bid => (
                             <BidItem key={bid.id} data={bid} />
                           ))}
+
+                          {/* Read more button to go to other pages */}
                           <button
                             style={{
                               margin: 10,
